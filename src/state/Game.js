@@ -22,6 +22,7 @@ Summ.Game = function (game) {
     this.map;
     this.layer;
     this.mask;
+    this.graphics;
 
     //  You can use any of these from any function within this State.
     //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
@@ -37,6 +38,7 @@ Summ.Game.prototype = {
 
         this.layer = this.map.create('layer', 5, 5, 128, 128);
         this.mask = this.map.createBlankLayer('mask', 5, 5, 128, 128);
+        this.graphics = this.game.add.graphics(0, 0);
 
         var marker = this.game.add.graphics();
         marker.lineStyle(2, 0x000000, 1);
@@ -55,9 +57,26 @@ Summ.Game.prototype = {
         var y = this.layer.getTileY(this.game.input.activePointer.worldY);
         this.marker.x = x * 128;
         this.marker.y = y * 128;
-        /*  if (this.game.input.mousePointer.isDown) {
-         this.selectTile(x, y);
-         }*/
+        x *= 128;
+        y *= 128;
+
+        var poly = new Phaser.Polygon([new Phaser.Point(x, y), new Phaser.Point(x, y + 128), new Phaser.Point(x + 64, y + 64)]);
+        this.drawTriangle(poly);
+        poly = new Phaser.Polygon([new Phaser.Point(x, y), new Phaser.Point(x + 128, y), new Phaser.Point(x + 64, y + 64)]);
+        this.drawTriangle(poly);
+        poly = new Phaser.Polygon([new Phaser.Point(x + 128, y), new Phaser.Point(x + 128, y + 128), new Phaser.Point(x + 64, y + 64)]);
+        this.drawTriangle(poly);
+        poly = new Phaser.Polygon([new Phaser.Point(x, y + 128), new Phaser.Point(x + 128, y + 128), new Phaser.Point(x + 64, y + 64)]);
+        this.drawTriangle(poly);
+    },
+
+    drawTriangle: function (poly) {
+        if (poly.contains(this.game.input.x, this.game.input.y)) {
+            this.graphics.clear();
+            this.graphics.beginFill(0xFF3300);
+            this.graphics.drawPolygon(poly.points);
+            this.graphics.endFill();
+        }
     },
 
     drawTiles: function () {
