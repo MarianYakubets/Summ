@@ -22,7 +22,6 @@ Summ.Game = function (game) {
     this.map;
     this.layer;
     this.mask;
-    this.selectedTiles = [];
 
     //  You can use any of these from any function within this State.
     //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
@@ -32,159 +31,70 @@ Summ.Game = function (game) {
 Summ.Game.prototype = {
     create: function () {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-        var image =  this.add.sprite(0, 0, 'green');
+        this.add.sprite(0, 0, 'green');
         this.map = this.game.add.tilemap();
-        this.map.addTilesetImage('tiles', 'tiles', 64, 64);
+        this.map.addTilesetImage('triangle', 'triangle', 128, 128);
 
-        this.layer = this.map.create('layer', 6, 6, 64, 64);
-        this.mask = this.map.createBlankLayer('mask', 6, 6, 64, 64);
+        this.layer = this.map.create('layer', 5, 5, 128, 128);
+        this.mask = this.map.createBlankLayer('mask', 5, 5, 128, 128);
 
-        this.layer.position.setTo(500,500);
-        this.mask.position.setTo(500,500);
-
-        this.fill();
-        this.marker = this.createTileSelector(this.game);
-        this.game.input.addMoveCallback(this.updateMarker, this);
-        this.game.input.onUp.add(this.changeTiles, this);
-    },
-
-    createTileSelector: function (game) {
-        //  Our tile selection window
-        var tileSelectorBackground = game.make.graphics();
-        tileSelectorBackground.beginFill(0x000000, 0.5);
-        tileSelectorBackground.drawRect(0, 0, 800, 68);
-        tileSelectorBackground.endFill();
-
-        //  Our painting marker
-        var marker = game.add.graphics();
+        var marker = this.game.add.graphics();
         marker.lineStyle(2, 0x000000, 1);
-        marker.drawRect(0, 0, 64, 64);
+        marker.beginFill(0x000000, .5);
+        marker.drawRect(0, 0, 128, 128);
+        marker.endFill();
+        this.marker = marker;
 
-        return marker;
+        this.drawTiles();
+
+        this.game.input.addMoveCallback(this.updateMarker, this);
     },
 
     updateMarker: function () {
         var x = this.layer.getTileX(this.game.input.activePointer.worldX);
         var y = this.layer.getTileY(this.game.input.activePointer.worldY);
-        this.marker.x = x * 64;
-        this.marker.y = y * 64;
-        if (this.game.input.mousePointer.isDown) {
-            this.selectTile(x, y);
-        }
+        this.marker.x = x * 128;
+        this.marker.y = y * 128;
+        /*  if (this.game.input.mousePointer.isDown) {
+         this.selectTile(x, y);
+         }*/
     },
 
-    selectTile: function (x, y) {
-        var el = [x, y];
-        //Contains
-        if (this.contains(this.selectedTiles, el)) {
-            return;
-        }
-        if (!this.isConnected(this.selectedTiles, el)) {
-            return;
-        }
-        if (this.twoSymbolsInRow(this.selectedTiles, el)) {
-            return;
-        }
-        if (this.emptyTile(el)) {
-            return;
-        }
-        this.selectedTiles.push(el);
-        this.map.putTile(13, el[0], el[1], this.mask);
+    drawTiles: function () {
+        this.map.putTile(0, 0, 0, this.layer);
+        this.map.putTile(0, 1, 0, this.layer);
+        this.map.putTile(0, 2, 0, this.layer);
+        this.map.putTile(0, 3, 0, this.layer);
+        this.map.putTile(0, 4, 0, this.layer);
 
+        this.map.putTile(0, 0, 1, this.layer);
+        this.map.putTile(0, 1, 1, this.layer);
+        this.map.putTile(0, 2, 1, this.layer);
+        this.map.putTile(0, 3, 1, this.layer);
+        this.map.putTile(0, 4, 1, this.layer);
+
+        this.map.putTile(0, 0, 2, this.layer);
+        this.map.putTile(0, 1, 2, this.layer);
+        this.map.putTile(0, 2, 2, this.layer);
+        this.map.putTile(0, 3, 2, this.layer);
+        this.map.putTile(0, 4, 2, this.layer);
+
+        this.map.putTile(0, 0, 3, this.layer);
+        this.map.putTile(0, 1, 3, this.layer);
+        this.map.putTile(0, 2, 3, this.layer);
+        this.map.putTile(0, 3, 3, this.layer);
+        this.map.putTile(0, 4, 3, this.layer);
+
+        this.map.putTile(0, 0, 4, this.layer);
+        this.map.putTile(0, 1, 4, this.layer);
+        this.map.putTile(0, 2, 4, this.layer);
+        this.map.putTile(0, 3, 4, this.layer);
+        this.map.putTile(0, 4, 4, this.layer);
     },
-
-    isConnected: function (selectedTiles, tile) {
-        if (selectedTiles.length == 0) {
-            return true;
-        }
-        var lastTile = selectedTiles[selectedTiles.length - 1];
-        if (tile[0] == lastTile[0]) {
-            return Math.abs(tile[1] - lastTile[1]) == 1;
-        } else if (tile[1] == lastTile[1]) {
-            return Math.abs(tile[0] - lastTile[0]) == 1;
-        }
-        return false;
-    },
-    emptyTile: function (tile) {
-        tile = this.map.getTile(tile[0], tile[1], this.layer);
-        return (tile.index > 11);
-    },
-
-    twoSymbolsInRow: function (selectedTiles, tile) {
-        if (selectedTiles.length == 0) {
-            return false;
-        }
-        var lastTile = selectedTiles[selectedTiles.length - 1];
-        lastTile = this.map.getTile(lastTile[0], lastTile[1], this.layer);
-        tile = this.map.getTile(tile[0], tile[1], this.layer);
-        return lastTile.index > 9 && tile.index > 9;
-    },
-
-    contains: function (selectedTiles, tile) {
-        var contains = false;
-        selectedTiles.forEach(function (element) {
-            if (element[0] == tile[0] && element[1] == tile[1]) {
-                contains = true;
-            }
-        });
-        return contains;
-    }
-    ,
-
-    changeTiles: function () {
-        if (this.selectedTiles.length == 0) {
-            return;
-        }
-        var evaluation = "";
-        for (var i = 0; i < this.selectedTiles.length; i++) {
-            var coordinates = this.selectedTiles[i];
-            this.map.removeTile(coordinates[0], coordinates[1], this.mask);
-            var tile = this.map.getTile(coordinates[0], coordinates[1], this.layer);
-            var index = tile.index;
-            if (index == 10) {
-                index = "+";
-            } else if (index == 11) {
-                index = "-";
-            } else if (index == 12) {
-                index = "";
-            } else if (index == 13) {
-                index = "";
-            }
-            evaluation += (index);
-            //this.map.putTile(++index, coordinates[0], coordinates[1], this.layer);
-        }
-        evaluation = eval(evaluation);
-        evaluation = evaluation.toString();
-        var type;
-        for (var i = 0; i < this.selectedTiles.length; i++) {
-            var coordinates = this.selectedTiles[this.selectedTiles.length - i - 1];
-            if (evaluation.length > i) {
-                this.map.putTile(evaluation[evaluation.length - 1 - i], coordinates[0], coordinates[1], this.layer);
-            } else {
-                this.map.removeTile(coordinates[0], coordinates[1], this.layer);
-            }
-        }
-        console.log(evaluation);
-        this.selectedTiles = [];
-    }
-    ,
-
-    fill: function () {
-        var type;
-        var width = 10;
-        for (var i = 0; i < 100; i++) {
-            type = this.rnd.between(0, 12);
-            var x = Math.floor(i / width);
-            var y = i % width;
-            this.map.putTile(type, x, y, this.layer);
-        }
-    }
-    ,
 
     update: function () {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-    }
-    ,
+    },
 
     quitGame: function (pointer) {
         //  Here you should destroy anything you no longer need.
@@ -192,5 +102,4 @@ Summ.Game.prototype = {
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');
     }
-
 };
