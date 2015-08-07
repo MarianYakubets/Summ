@@ -80,7 +80,7 @@ Summ.Game.prototype = {
         var graphics = this.graphics;
         this.selectedTriangles.push(poly);
         this.selectedTriangles.forEach(function (poly) {
-            graphics.beginFill(0xFFFFE0);
+            graphics.beginFill(0xFFFFE0, 1);
             graphics.drawPolygon(poly.points);
             graphics.endFill();
         });

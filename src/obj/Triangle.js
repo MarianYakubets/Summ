@@ -5,5 +5,4 @@ Summ.Triangle = function (type,color) {
 
 Summ.Triangle.prototype = {
 
-
 };
