@@ -18,11 +18,12 @@ Summ.Game = function (game) {
     this.physics;   //  the physics manager (Phaser.Physics)
     this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
     //Own
-    this.marker;
     this.map;
     this.layer;
     this.mask;
+    this.selectGraphics;
     this.graphics;
+    this.selectedTriangles = [];
 
     //  You can use any of these from any function within this State.
     //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
@@ -38,14 +39,9 @@ Summ.Game.prototype = {
 
         this.layer = this.map.create('layer', 5, 5, 128, 128);
         this.mask = this.map.createBlankLayer('mask', 5, 5, 128, 128);
-        this.graphics = this.game.add.graphics(0, 0);
 
-        var marker = this.game.add.graphics();
-        marker.lineStyle(2, 0x000000, 1);
-        marker.beginFill(0x000000, .5);
-        marker.drawRect(0, 0, 128, 128);
-        marker.endFill();
-        this.marker = marker;
+        this.graphics = this.game.add.graphics(0, 0);
+        this.selectGraphics = this.game.add.graphics(0, 0);
 
         this.drawTiles();
 
@@ -55,8 +51,6 @@ Summ.Game.prototype = {
     updateMarker: function () {
         var x = this.layer.getTileX(this.game.input.activePointer.worldX);
         var y = this.layer.getTileY(this.game.input.activePointer.worldY);
-        this.marker.x = x * 128;
-        this.marker.y = y * 128;
         x *= 128;
         y *= 128;
 
@@ -72,11 +66,24 @@ Summ.Game.prototype = {
 
     drawTriangle: function (poly) {
         if (poly.contains(this.game.input.x, this.game.input.y)) {
-            this.graphics.clear();
-            this.graphics.beginFill(0xFF3300);
-            this.graphics.drawPolygon(poly.points);
-            this.graphics.endFill();
+            this.selectGraphics.clear();
+            this.selectGraphics.beginFill(0xFFFFF, 0.5);
+            this.selectGraphics.drawPolygon(poly.points);
+            this.selectGraphics.endFill();
+            if (this.game.input.mousePointer.isDown) {
+                this.selectTriangle(poly);
+            }
         }
+    },
+
+    selectTriangle: function (poly) {
+        var graphics = this.graphics;
+        this.selectedTriangles.push(poly);
+        this.selectedTriangles.forEach(function (poly) {
+            graphics.beginFill(0xFFFFE0);
+            graphics.drawPolygon(poly.points);
+            graphics.endFill();
+        });
     },
 
     drawTiles: function () {
