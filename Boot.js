@@ -32,9 +32,9 @@ Summ.Boot.prototype = {
     preload: function () {
         //  Here we load the assets required for our preload (in this case a background and a loading bar)
         this.load.image('green', 'res/img/green.jpg');
-        this.load.image('square', 'res/img/square_grey.png');
         this.load.image('empty', 'res/img/square_empty.png');
         this.load.image('tiles', 'res/img/tiles64.png');
+        this.load.image('square', 'res/img/square.png');
         this.load.image('triangle', 'res/img/triangle.png');
 
     },
