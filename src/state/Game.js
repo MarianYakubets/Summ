@@ -1,7 +1,7 @@
 Summ.Game = function (game) {
 
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
-    this.game;      //  a reference to the currently running game (Phaser.Game)
+    this.game = game;      //  a reference to the currently running game (Phaser.Game)
     this.add;       //  used to add sprites, text, groups, etc (Phaser.GameObjectFactory)
     this.camera;    //  a reference to the game camera (Phaser.Camera)
     this.cache;     //  the game cache (Phaser.Cache)
@@ -18,13 +18,13 @@ Summ.Game = function (game) {
     this.physics;   //  the physics manager (Phaser.Physics)
     this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
     //Own
-    this.utils = new Summ.Utils();
     this.map;
     this.layer;
     this.mask;
     this.selectGraphics;
     this.graphics;
-    this.selectedTriangles = [];
+
+    this.level;
 
     this.moveX = 50;
     this.moveY = 200;
@@ -37,6 +37,11 @@ Summ.Game = function (game) {
 };
 
 Summ.Game.prototype = {
+    init:function(level){
+        this.level = level;
+       console.log(level.number);
+    },
+
     create: function () {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
         this.add.sprite(0, 0, 'green');
@@ -63,11 +68,19 @@ Summ.Game.prototype = {
         var y = this.game.input.activePointer.worldY - this.moveY;
 
         if (x < 0 || y < 0) {
+            this.selectGraphics.x = 900;
+            this.selectGraphics.y = 900;
+            return;
+        }
+        x = this.layer.getTileX(x);
+        y = this.layer.getTileY(y);
+
+        if (x > 1 || y > 2) {
+            this.selectGraphics.x = 900;
+            this.selectGraphics.y = 900;
             return;
         }
 
-        x = this.layer.getTileX(x);
-        y = this.layer.getTileY(y);
 
         x *= this.tileSize;
         y *= this.tileSize;
@@ -75,53 +88,8 @@ Summ.Game.prototype = {
         x += this.moveX;
         y += this.moveY;
 
-        this.selectGraphics.clear();
-
-        var poly = new Phaser.Polygon([new Phaser.Point(x, y), new Phaser.Point(x, y + this.tileSize), new Phaser.Point(x + this.halfTileSize, y + this.halfTileSize)]);
-        this.drawTriangleOnDown(poly);
-        poly = new Phaser.Polygon([new Phaser.Point(x, y), new Phaser.Point(x + this.tileSize, y), new Phaser.Point(x + this.halfTileSize, y + this.halfTileSize)]);
-        this.drawTriangleOnDown(poly);
-        poly = new Phaser.Polygon([new Phaser.Point(x + this.tileSize, y), new Phaser.Point(x + this.tileSize, y + this.tileSize), new Phaser.Point(x + this.halfTileSize, y + this.halfTileSize)]);
-        this.drawTriangleOnDown(poly);
-        poly = new Phaser.Polygon([new Phaser.Point(x, y + this.tileSize), new Phaser.Point(x + this.tileSize, y + this.tileSize), new Phaser.Point(x + this.halfTileSize, y + this.halfTileSize)]);
-        this.drawTriangleOnDown(poly);
-    },
-
-    drawTriangleOnDown: function (poly) {
-        if (poly.contains(this.game.input.x, this.game.input.y)) {
-            this.selectGraphics.beginFill(0xFFFFF, 0.5);
-            this.selectGraphics.drawPolygon(poly.points);
-            this.selectGraphics.endFill();
-            /*if (this.game.input.mousePointer.isDown) {
-                this.selectTriangle(poly);
-            }*/
-        }
-    },
-
-    drawFigure: function (figure, image) {
-        var poly;
-        var size = this.tileSize;
-        var x = this.moveX;
-        var y = this.moveY;
-        var utils = this.utils;
-        figure.tiles.forEach(function (tile) {
-            tile.triangles.forEach(function (triangle) {
-                image.beginFill(triangle.color);
-                image.drawPolygon(utils.polyForTriangle(tile, triangle.type, size, 0, 0));
-                image.endFill();
-            });
-        });
-        return image;
-    },
-
-    selectTriangle: function (poly) {
-        var graphics = this.graphics;
-        this.selectedTriangles.push(poly);
-        this.selectedTriangles.forEach(function (poly) {
-            graphics.beginFill(0xFFFFE0, 1);
-            graphics.drawPolygon(poly.points);
-            graphics.endFill();
-        });
+        this.selectGraphics.x = x;
+        this.selectGraphics.y = y;
     },
 
     drawTiles: function () {
@@ -134,25 +102,43 @@ Summ.Game.prototype = {
         this.map.putTile(0, 0, 2, this.layer);
         this.map.putTile(0, 1, 2, this.layer);
 
-        /*var figure = new Summ.Figure([new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.TOP, Summ.Colors.BLUE)], 0, 0)]);
-         this.triangle = this.drawFigure(figure, this.game.add.graphics(0, 0));*/
-        this.triangle = this.add.sprite(0, 0, 'triangle');
-        this.triangle.inputEnabled = true;
-        this.triangle.anchor.setTo(0.5, 0.5);
-        this.triangle.events.onInputDown.add(this.inputDownListener, this);
-        this.triangle.events.onInputUp.add(this.inputUpListener, this);
+        var figure = new Summ.Figure([new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.TOP, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.LEFT, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.RIGHT, Summ.Colors.BLUE)], 0, 0)]);
+        this.triangle = new Summ.FigureGroup(this.game, figure);
+        this.triangle.position.setTo(100, 100);
+        var state = this;
+        this.triangle.forEach(function (item) {
+            item.inputEnabled = true;
+            item.events.onInputDown.add(state.inputDownListener, state);
+            item.events.onInputUp.add(state.inputUpListener, state);
+        });
+
+       // drawFigure();
     },
 
     inputDownListener: function () {
         this.chosen = this.triangle;
+        this.selectGraphics.clear();
+        this.selectGraphics.position.setTo(900, 900);
+        var selectGraphics = this.selectGraphics;
+        this.chosen.figure.tiles.forEach(function (tile) {
+            selectGraphics.beginFill(0xFFFFE0, 0.4);
+            tile.triangles.forEach(function (triangle) {
+                selectGraphics.drawPolygon(Utils.polyForTriangle(tile, triangle.type, 128, 0, 0));
+            });
+            selectGraphics.endFill();
+        })
+
     },
 
-    inputUpListener:function(){
+    inputUpListener: function () {
+        this.chosen.x = this.selectGraphics.x + this.halfTileSize;
+        this.chosen.y = this.selectGraphics.y + this.halfTileSize;
         this.chosen = null;
+        this.selectGraphics.clear();
     },
 
-    updateFigureLocation:function(){
-        if(this.chosen){
+    updateFigureLocation: function () {
+        if (this.chosen) {
             this.chosen.x = this.game.input.activePointer.worldX;
             this.chosen.y = this.game.input.activePointer.worldY;
         }

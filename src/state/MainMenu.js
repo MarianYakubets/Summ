@@ -19,7 +19,7 @@ Summ.MainMenu.prototype = {
 
 	startGame: function (pointer) {
 		//	And start the actual game
-		this.state.start('Game');
+		this.state.start('Game',true, false, new Summ.Level(1));
 	}
 
 };
