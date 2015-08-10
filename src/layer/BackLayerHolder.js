@@ -1,5 +1,5 @@
 Summ.BackLayerHolder = function (game, level, map) {
-    this.keys = level.keys;
+    this.aims = level.aims;
     this.name = 'backLayer';
     this.game = game;
     this.map = map;
@@ -15,6 +15,7 @@ Summ.BackLayerHolder.prototype = {
         this.graphics = this.game.add.graphics(0, 0);
 
         this.fillEmptyTile(this.map, this.layer, level.width, level.heigth);
+        this.drawTiles(level.targets, this.graphics, 50, 200);
     },
 
     fillEmptyTile: function (map, layer, width, heigth) {
@@ -25,9 +26,13 @@ Summ.BackLayerHolder.prototype = {
         }
     },
 
-    drawTiles: function (tiles, graphics, moveX, moveY) {
-
+    drawTiles: function (figure, graphics, moveX, moveY) {
+        figure.tiles.forEach(function (tile) {
+            graphics.beginFill(0xFFFFE0, 1);
+            tile.triangles.forEach(function (triangle) {
+                graphics.drawPolygon(Utils.polyForTriangle(tile, triangle.type, 128, moveX, moveY));
+            });
+            graphics.endFill();
+        });
     }
-
-
 };

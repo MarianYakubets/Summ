@@ -1,9 +1,9 @@
-Summ.Level = function (number, width, heigth, keys, figures) {
+Summ.Level = function (number, width, heigth, targets, figures) {
     this.number = number;
     this.figures = figures;
     this.width = width;
     this.heigth = heigth;
-    this.keys = keys;
+    this.targets = targets;
 };
 
 Summ.Level.prototype = {};

@@ -49,8 +49,6 @@ Summ.Game.prototype = {
         this.map.addTilesetImage('square', 'square', this.tileSize, this.tileSize);
 
         this.backLayer = new Summ.BackLayerHolder(this.game, this.level, this.map);
-
-        this.graphics = this.game.add.graphics(0, 0);
         this.selectGraphics = this.game.add.graphics(0, 0);
 
         this.drawTiles();
@@ -90,17 +88,7 @@ Summ.Game.prototype = {
     },
 
     drawTiles: function () {
-        this.map.putTile(0, 0, 0, this.backLayer.layer);
-        this.map.putTile(0, 1, 0, this.backLayer.layer);
-
-        this.map.putTile(0, 0, 1, this.backLayer.layer);
-        this.map.putTile(0, 1, 1, this.backLayer.layer);
-
-        this.map.putTile(0, 0, 2, this.backLayer.layer);
-        this.map.putTile(0, 1, 2, this.backLayer.layer);
-
-
-        var figure = new Summ.Figure([new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.TOP, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.LEFT, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.RIGHT, Summ.Colors.BLUE)], 0, 0)]);
+        var figure = this.level.figures;
         this.triangle = new Summ.FigureGroup(this.game, figure);
         this.triangle.position.setTo(100, 100);
         var state = this;
@@ -109,8 +97,6 @@ Summ.Game.prototype = {
             item.events.onInputDown.add(state.inputDownListener, state);
             item.events.onInputUp.add(state.inputUpListener, state);
         });
-
-        // drawFigure();
     },
 
     inputDownListener: function () {
@@ -124,7 +110,7 @@ Summ.Game.prototype = {
                 selectGraphics.drawPolygon(Utils.polyForTriangle(tile, triangle.type, 128, 0, 0));
             });
             selectGraphics.endFill();
-        })
+        });
 
     },
 
@@ -144,12 +130,5 @@ Summ.Game.prototype = {
 
     update: function () {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-    },
-
-    quitGame: function (pointer) {
-        //  Here you should destroy anything you no longer need.
-        //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
-        //  Then let's go back to the main menu.
-        this.state.start('MainMenu');
     }
 };
