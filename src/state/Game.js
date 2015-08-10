@@ -19,12 +19,12 @@ Summ.Game = function (game) {
     this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
     //Own
     this.map;
-    this.layer;
     this.mask;
     this.selectGraphics;
     this.graphics;
 
     this.level;
+    this.backLayer;
 
     this.moveX = 50;
     this.moveY = 200;
@@ -37,9 +37,9 @@ Summ.Game = function (game) {
 };
 
 Summ.Game.prototype = {
-    init:function(level){
+    init: function (level) {
         this.level = level;
-       console.log(level.number);
+        console.log(level.number);
     },
 
     create: function () {
@@ -48,10 +48,7 @@ Summ.Game.prototype = {
         this.map = this.game.add.tilemap();
         this.map.addTilesetImage('square', 'square', this.tileSize, this.tileSize);
 
-        this.layer = this.map.create('layer', 2, 3, this.tileSize, this.tileSize);
-        this.layer.fixedToCamera = false;
-        this.layer.position.setTo(this.moveX, this.moveY);
-        //this.mask = this.map.createBlankLayer('mask', 5, 5, 128, 128);
+        this.backLayer = new Summ.BackLayerHolder(this.game, this.level, this.map);
 
         this.graphics = this.game.add.graphics(0, 0);
         this.selectGraphics = this.game.add.graphics(0, 0);
@@ -72,8 +69,8 @@ Summ.Game.prototype = {
             this.selectGraphics.y = 900;
             return;
         }
-        x = this.layer.getTileX(x);
-        y = this.layer.getTileY(y);
+        x = this.backLayer.layer.getTileX(x);
+        y = this.backLayer.layer.getTileY(y);
 
         if (x > 1 || y > 2) {
             this.selectGraphics.x = 900;
@@ -93,14 +90,15 @@ Summ.Game.prototype = {
     },
 
     drawTiles: function () {
-        this.map.putTile(0, 0, 0, this.layer);
-        this.map.putTile(0, 1, 0, this.layer);
+        this.map.putTile(0, 0, 0, this.backLayer.layer);
+        this.map.putTile(0, 1, 0, this.backLayer.layer);
 
-        this.map.putTile(0, 0, 1, this.layer);
-        this.map.putTile(0, 1, 1, this.layer);
+        this.map.putTile(0, 0, 1, this.backLayer.layer);
+        this.map.putTile(0, 1, 1, this.backLayer.layer);
 
-        this.map.putTile(0, 0, 2, this.layer);
-        this.map.putTile(0, 1, 2, this.layer);
+        this.map.putTile(0, 0, 2, this.backLayer.layer);
+        this.map.putTile(0, 1, 2, this.backLayer.layer);
+
 
         var figure = new Summ.Figure([new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.TOP, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.LEFT, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.RIGHT, Summ.Colors.BLUE)], 0, 0)]);
         this.triangle = new Summ.FigureGroup(this.game, figure);
@@ -112,7 +110,7 @@ Summ.Game.prototype = {
             item.events.onInputUp.add(state.inputUpListener, state);
         });
 
-       // drawFigure();
+        // drawFigure();
     },
 
     inputDownListener: function () {
