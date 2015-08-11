@@ -19,12 +19,10 @@ Summ.Game = function (game) {
     this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
     //Own
     this.map;
-    this.mask;
-    this.selectGraphics;
-    this.graphics;
 
     this.level;
-    this.backLayer;
+    this.backLayerHolder;
+    this.frontLayerHolder;
 
     this.moveX = 50;
     this.moveY = 200;
@@ -48,84 +46,9 @@ Summ.Game.prototype = {
         this.map = this.game.add.tilemap();
         this.map.addTilesetImage('square', 'square', this.tileSize, this.tileSize);
 
-        this.backLayer = new Summ.BackLayerHolder(this.game, this.level, this.map);
-        this.selectGraphics = this.game.add.graphics(0, 0);
+        this.backLayerHolder = new Summ.BackLayerHolder(this.game, this.level, this.map);
+        this.frontLayerHolder = new Summ.FrontLayerHolder(this.game, this.level, this.map);
 
-        this.drawTiles();
-
-        this.game.input.addMoveCallback(this.updateMarker, this);
-    },
-
-    updateMarker: function () {
-        this.updateFigureLocation();
-
-        var x = this.game.input.activePointer.worldX - this.moveX;
-        var y = this.game.input.activePointer.worldY - this.moveY;
-
-        if (x < 0 || y < 0) {
-            this.selectGraphics.x = 900;
-            this.selectGraphics.y = 900;
-            return;
-        }
-        x = this.backLayer.layer.getTileX(x);
-        y = this.backLayer.layer.getTileY(y);
-
-        if (x > 1 || y > 2) {
-            this.selectGraphics.x = 900;
-            this.selectGraphics.y = 900;
-            return;
-        }
-
-
-        x *= this.tileSize;
-        y *= this.tileSize;
-
-        x += this.moveX;
-        y += this.moveY;
-
-        this.selectGraphics.x = x;
-        this.selectGraphics.y = y;
-    },
-
-    drawTiles: function () {
-        var figure = this.level.figures;
-        this.triangle = new Summ.FigureGroup(this.game, figure);
-        this.triangle.position.setTo(100, 100);
-        var state = this;
-        this.triangle.forEach(function (item) {
-            item.inputEnabled = true;
-            item.events.onInputDown.add(state.inputDownListener, state);
-            item.events.onInputUp.add(state.inputUpListener, state);
-        });
-    },
-
-    inputDownListener: function () {
-        this.chosen = this.triangle;
-        this.selectGraphics.clear();
-        this.selectGraphics.position.setTo(900, 900);
-        var selectGraphics = this.selectGraphics;
-        this.chosen.figure.tiles.forEach(function (tile) {
-            selectGraphics.beginFill(0xFFFFE0, 0.4);
-            tile.triangles.forEach(function (triangle) {
-                selectGraphics.drawPolygon(Utils.polyForTriangle(tile, triangle.type, 128, 0, 0));
-            });
-            selectGraphics.endFill();
-        });
-
-    },
-
-    inputUpListener: function () {
-        this.chosen.x = this.selectGraphics.x + this.halfTileSize;
-        this.chosen.y = this.selectGraphics.y + this.halfTileSize;
-        this.chosen = null;
-        this.selectGraphics.clear();
-    },
-
-    updateFigureLocation: function () {
-        if (this.chosen) {
-            this.chosen.x = this.game.input.activePointer.worldX;
-            this.chosen.y = this.game.input.activePointer.worldY;
-        }
     },
 
     update: function () {
