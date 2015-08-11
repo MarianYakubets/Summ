@@ -1,6 +1,7 @@
 Summ.FieldController = function (level) {
     this.level = level;
-    this.targetItems = this.createTargetItems(level);
+    this.targetItems = this.createTargetItems(level.targets);
+    this.items = []
 };
 
 Summ.FieldController.prototype = {
@@ -13,14 +14,15 @@ Summ.FieldController.prototype = {
 
     },
 
-    createTargetItems: function (level) {
-        var items =[];
-        var targets = level.targets;
-        targets.forEach(function (figure) {
-            figure.tiles[0].triangles.forEach(function(triangle){
-               items.push([tile.x,tile.y,triangle.type],triangle.color) ;
+    createTargetItems: function (tiles) {
+        var items = [];
+        tiles.forEach(function (tile) {
+            tile.triangles.forEach(function (triangle) {
+                items.push(new Summ.Item([tile.x, tile.y, triangle.type], triangle.color));
             });
         });
+        console.log(items.toString());
+        return items;
     }
 
 };

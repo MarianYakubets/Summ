@@ -11,6 +11,7 @@ Summ.FrontLayerHolder = function (game, level, map) {
     this.tileSize = 128;
     this.halfTileSize = this.tileSize / 2;
     this.currentFigure = null;
+    this.fieldController = new Summ.FieldController(level);
 
     this.init(level);
 };
