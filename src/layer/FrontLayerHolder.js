@@ -48,6 +48,7 @@ Summ.FrontLayerHolder.prototype = {
                 marker.drawPolygon(Utils.polyForTriangle(holder.currentFigure.tile, triangle.type, 128, 0, 0));
             });
             marker.endFill();
+            holder.fieldController.removeFigureFromField(holder.currentFigure.tile);
         }
 
     },
@@ -90,6 +91,10 @@ Summ.FrontLayerHolder.prototype = {
         if (this.currentFigure) {
             this.currentFigure.x = this.game.input.activePointer.worldX;
             this.currentFigure.y = this.game.input.activePointer.worldY;
+            this.currentFigure.tile.x = this.layer.getTileX(x);
+            this.currentFigure.tile.y = this.layer.getTileX(y);
+            this.fieldController.setFigureToField(this.currentFigure.tile);
+
         }
     }
 };

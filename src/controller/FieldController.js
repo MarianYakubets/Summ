@@ -5,13 +5,21 @@ Summ.FieldController = function (level) {
 };
 
 Summ.FieldController.prototype = {
-    setFigureToField: function (figure) {
-
+    removeFigureFromField: function (tile) {
+        var index;
+        var items = this.items;
+        tile.triangles.forEach(function (triangle) {
+            index = items.indexOf(new Summ.Item([tile.x, tile.y, triangle.type], triangle.color));
+            if (index != -1) {
+                items.splice(index, 1);
+            }
+        });
     },
 
-    removeFigureFromField: function (figure) {
-
-
+    setFigureToField: function (tile) {
+        tile.triangles.forEach(function (triangle) {
+            this.items.push(new Summ.Item([tile.x, tile.y, triangle.type], triangle.color));
+        });
     },
 
     createTargetItems: function (tiles) {
