@@ -17,8 +17,9 @@ Summ.FieldController.prototype = {
     },
 
     setFigureToField: function (tile) {
+        var items = this.items;
         tile.triangles.forEach(function (triangle) {
-            this.items.push(new Summ.Item([tile.x, tile.y, triangle.type], triangle.color));
+            items.push(new Summ.Item([tile.x, tile.y, triangle.type], triangle.color));
         });
     },
 

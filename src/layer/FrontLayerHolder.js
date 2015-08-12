@@ -91,8 +91,8 @@ Summ.FrontLayerHolder.prototype = {
         if (this.currentFigure) {
             this.currentFigure.x = this.game.input.activePointer.worldX;
             this.currentFigure.y = this.game.input.activePointer.worldY;
-            this.currentFigure.tile.x = this.layer.getTileX(x);
-            this.currentFigure.tile.y = this.layer.getTileX(y);
+            this.currentFigure.tile.x = this.layer.getTileX(this.currentFigure.x);
+            this.currentFigure.tile.y = this.layer.getTileX(this.currentFigure.y);
             this.fieldController.setFigureToField(this.currentFigure.tile);
 
         }
