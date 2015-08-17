@@ -18,9 +18,19 @@ Summ.FieldController.prototype = {
 
     setFigureToField: function (tile) {
         var items = this.items;
+        var taken = false;
+        tile.triangles.forEach(function (triangle) {
+            items.forEach(function (item) {
+                taken = ( item.position == [tile.x, tile.y, triangle.type]);
+            });
+        });
+        if (taken) {
+            return false;
+        }
         tile.triangles.forEach(function (triangle) {
             items.push(new Summ.Item([tile.x, tile.y, triangle.type], triangle.color));
         });
+        return true;
     },
 
     createTargetItems: function (tiles) {

@@ -90,11 +90,15 @@ Summ.FrontLayerHolder.prototype = {
 
     updateFigureLocation: function () {
         if (this.currentFigure) {
-            this.currentFigure.x = this.game.input.activePointer.worldX;
-            this.currentFigure.y = this.game.input.activePointer.worldY;
-            this.currentFigure.tile.x = this.layer.getTileX(this.currentFigure.x);
-            this.currentFigure.tile.y = this.layer.getTileX(this.currentFigure.y);
-            this.fieldController.setFigureToField(this.currentFigure.tile);
+           if( this.fieldController.setFigureToField(this.currentFigure.tile)){
+               this.currentFigure.x = this.game.input.activePointer.worldX;
+               this.currentFigure.y = this.game.input.activePointer.worldY;
+               this.currentFigure.tile.x = this.layer.getTileX(this.currentFigure.x);
+               this.currentFigure.tile.y = this.layer.getTileX(this.currentFigure.y);
+           }else{
+               this.currentFigure.x = 0;
+               this.currentFigure.y = 0;
+           }
 
         }
     }
