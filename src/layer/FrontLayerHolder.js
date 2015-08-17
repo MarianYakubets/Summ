@@ -44,8 +44,9 @@ Summ.FrontLayerHolder.prototype = {
             marker.clear();
             marker.position.setTo(900, 900);
             marker.beginFill(0x000000, 0.2);
+            var tile = new Summ.Tile([],0,0);
             holder.currentFigure.tile.triangles.forEach(function (triangle) {
-                marker.drawPolygon(Utils.polyForTriangle(holder.currentFigure.tile, triangle.type, 128, 0, 0));
+                marker.drawPolygon(Utils.polyForTriangle(tile, triangle.type, 128, 0, 0));
             });
             marker.endFill();
             holder.fieldController.removeFigureFromField(holder.currentFigure.tile);
