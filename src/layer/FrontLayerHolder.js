@@ -61,14 +61,9 @@ Summ.FrontLayerHolder.prototype = {
         if (this.currentFigure == null) {
             return;
         }
-
-        if (this.fieldController.setFigureToField(this.currentFigure.tile)) {
-            this.currentFigure.x = this.marker.x + this.halfTileSize;
-            this.currentFigure.y = this.marker.y + this.halfTileSize;
-        } else {
-            this.currentFigure.x = this.currentFigure.tile.x + this.halfTileSize;
-            this.currentFigure.y = this.currentFigure.tile.y + this.halfTileSize;
-        }
+        this.fieldController.setFigureToField(this.layer.getTileX(this.marker.x - this.moveX), this.layer.getTileY(this.marker.y - this.moveY), this.currentFigure.tile);
+        this.currentFigure.x = this.currentFigure.tile.x * this.tileSize + this.halfTileSize + this.moveX;
+        this.currentFigure.y = this.currentFigure.tile.y * this.tileSize + this.halfTileSize + this.moveY;
         this.currentFigure = null;
 
     },
@@ -95,14 +90,14 @@ Summ.FrontLayerHolder.prototype = {
 
         this.marker.x = x * this.tileSize + this.moveX;
         this.marker.y = y * this.tileSize + this.moveY;
-    },
+    }
+    ,
 
     updateFigureLocation: function () {
         if (this.currentFigure) {
             this.currentFigure.x = this.game.input.activePointer.worldX;
             this.currentFigure.y = this.game.input.activePointer.worldY;
-            this.currentFigure.tile.x = this.layer.getTileX(this.currentFigure.x);
-            this.currentFigure.tile.y = this.layer.getTileX(this.currentFigure.y);
         }
     }
-};
+}
+;

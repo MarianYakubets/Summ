@@ -18,3 +18,7 @@ Utils.polyForTriangle = function (tile, type, size, moveX, moveY) {
         return new Phaser.Polygon([new Phaser.Point(x, y + size), new Phaser.Point(x + size, y + size), new Phaser.Point(x + halfSize, y + halfSize)]);
 
 };
+
+Utils.coordinateToKey = function (x, y, type) {
+    return type + x + y;
+};
