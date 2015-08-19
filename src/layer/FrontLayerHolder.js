@@ -20,9 +20,12 @@ Summ.FrontLayerHolder.prototype = {
     init: function (level) {
         this.layer.fixedToCamera = false;
         this.layer.position.setTo(50, 200);
-        var symbol = this.drawTile(level.figures[0], this);
-        symbol.x = 100;
-        symbol.y = 100;
+        var symbol;
+        for (var i = 0; i < level.figures.length; i++) {
+            symbol = this.drawTile(level.figures[i], this);
+            symbol.x = 100 + (this.tileSize + 10) * i;
+            symbol.y = 100;
+        }
         this.game.input.addMoveCallback(this.updateMarker, this);
     },
 
@@ -44,12 +47,11 @@ Summ.FrontLayerHolder.prototype = {
             marker.clear();
             marker.position.setTo(900, 900);
             marker.beginFill(0x000000, 0.2);
-            var tile = new Summ.Tile([],0,0);
+            var tile = new Summ.Tile([], 0, 0);
             holder.currentFigure.tile.triangles.forEach(function (triangle) {
                 marker.drawPolygon(Utils.polyForTriangle(tile, triangle.type, 128, 0, 0));
             });
             marker.endFill();
-            holder.fieldController.removeFigureFromField(holder.currentFigure.tile);
         }
 
     },
@@ -59,9 +61,16 @@ Summ.FrontLayerHolder.prototype = {
         if (this.currentFigure == null) {
             return;
         }
-        this.currentFigure.x = this.marker.x + this.halfTileSize;
-        this.currentFigure.y = this.marker.y + this.halfTileSize;
+
+        if (this.fieldController.setFigureToField(this.currentFigure.tile)) {
+            this.currentFigure.x = this.marker.x + this.halfTileSize;
+            this.currentFigure.y = this.marker.y + this.halfTileSize;
+        } else {
+            this.currentFigure.x = this.currentFigure.tile.x + this.halfTileSize;
+            this.currentFigure.y = this.currentFigure.tile.y + this.halfTileSize;
+        }
         this.currentFigure = null;
+
     },
 
     updateMarker: function () {
@@ -90,16 +99,10 @@ Summ.FrontLayerHolder.prototype = {
 
     updateFigureLocation: function () {
         if (this.currentFigure) {
-           if( this.fieldController.setFigureToField(this.currentFigure.tile)){
-               this.currentFigure.x = this.game.input.activePointer.worldX;
-               this.currentFigure.y = this.game.input.activePointer.worldY;
-               this.currentFigure.tile.x = this.layer.getTileX(this.currentFigure.x);
-               this.currentFigure.tile.y = this.layer.getTileX(this.currentFigure.y);
-           }else{
-               this.currentFigure.x = 0;
-               this.currentFigure.y = 0;
-           }
-
+            this.currentFigure.x = this.game.input.activePointer.worldX;
+            this.currentFigure.y = this.game.input.activePointer.worldY;
+            this.currentFigure.tile.x = this.layer.getTileX(this.currentFigure.x);
+            this.currentFigure.tile.y = this.layer.getTileX(this.currentFigure.y);
         }
     }
 };

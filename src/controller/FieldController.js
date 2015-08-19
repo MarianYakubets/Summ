@@ -30,6 +30,8 @@ Summ.FieldController.prototype = {
         tile.triangles.forEach(function (triangle) {
             items.push(new Summ.Item([tile.x, tile.y, triangle.type], triangle.color));
         });
+        this.removeFigureFromField(tile);
+
         return true;
     },
 
