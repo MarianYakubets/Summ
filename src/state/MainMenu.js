@@ -20,7 +20,7 @@ Summ.MainMenu.prototype = {
     startGame: function (pointer) {
         //	And start the actual game
         this.state.start('Game', true, false, new Summ.Level(1, 2, 3,
-            [new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.TOP, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.LEFT, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.RIGHT, Summ.Colors.BLUE)], 0, 0)], [new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.TOP, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.LEFT, Summ.Colors.BLUE)], 0, 0), new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.RIGHT, Summ.Colors.BLUE)], 0, 0)]));
+            [new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.TOP, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.LEFT, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.RIGHT, Summ.Colors.BLUE)], 0, 0)], [new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.TOP, Summ.Colors.BLUE), new Summ.Triangle(Summ.TriangleTypes.LEFT, Summ.Colors.BLUE)], 0, 0), new Summ.Tile([new Summ.Triangle(Summ.TriangleTypes.RIGHT, Summ.Colors.BLUE),new Summ.Triangle(Summ.TriangleTypes.TOP, Summ.Colors.BLUE)], 0, 0)]));
     }
 
 };
